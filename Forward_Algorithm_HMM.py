@@ -1,32 +1,55 @@
 import numpy as np
 
 def forward(A, pi, B, observations):
-    M = len(observations)
+    """
+    A : Transient Matrix -> (N, N) Matrix 
+    pi : Initial Probablities -> (N, ) Vector
+    B : Emmision Matrix -> (N, M) Matrix
+    observations : sequence of observations : a list with lenght, T
+    """
+
+    T = len(observations)
     N = pi.shape[0]
     
-    alpha = np.zeros((M, N))
+    """
+    Creating alpha matrix. 
+    alpha is a (T, N) matrix.
+    a[t, :],the t row of the matrix, represents the P(o1, o2 , ... , ot , qt = Si)
+    """
+    alpha = np.zeros((T, N))
     
     # Initialization
     '''
-    Since their are no previous states. the probability of being in state 1 at time 1 is given as product of:
+    Since There are no previous states. the probability of being in state 1 at time 1 is given as product of:
     1. Initial Probability of being in state 1
     2. Emmision Probability of symbol O(1) being in state 1
     '''
     alpha[0, :] = pi * B[:,observations[0]]
     
     # Induction
+    # print(A @ alpha[0, :] )
+    # print(B[:,observations[1]])
+    # print(A @ alpha[0, :] * B[:,observations[1]] )
     '''
     if we know the previous state i,then the probability of being in state j at time t+1 is given as product of:
     1. Probability of being in state i at time t
     2. Transition probability of going from state i to state j
     3. Emmision Probability of symbol O(t+1) being in state j
     '''
-    for t in range(1, M):
+    for t in range(1,T): 
+        alpha[t,:] = A.T @ alpha[t-1, :] * B[:,observations[t]]
+
+    """
+    and this is the basid implementation of the algorithm, not using matrix multiplication. 
+    the output is the same.
+    for t in range(1, T):
         for j in range(N):
             for i in range(N):
                 alpha[t, j] += alpha[t-1, i] * A[i, j] * B[j, observations[t]]
-    
-    return np.sum(alpha[M-1,:])
+    """
+
+    print(f"The alpha matrix is \n:{alpha}")
+    return np.sum(alpha[T-1,:])
 
 
 def main():
