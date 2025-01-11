@@ -4,7 +4,7 @@ def forward(A, pi, B, observations):
     """
     A : Transient Matrix -> (N, N) Matrix 
     pi : Initial Probablities -> (N, ) Vector
-    B : Emmision Matrix -> (N, M) Matrix
+    B : Emmision Matrix -> (N, T) Matrix
     observations : sequence of observations : a list with lenght, T
     """
 
@@ -14,7 +14,7 @@ def forward(A, pi, B, observations):
     """
     Creating alpha matrix. 
     alpha is a (T, N) matrix.
-    a[t, :],the t row of the matrix, represents the P(o1, o2 , ... , ot , qt = Si)
+    alpha[t, :],the t'th row of the matrix, represents the P(o1, o2 , ... , ot , qt = Si)
     """
     alpha = np.zeros((T, N))
     
@@ -26,10 +26,6 @@ def forward(A, pi, B, observations):
     '''
     alpha[0, :] = pi * B[:,observations[0]]
     
-    # Induction
-    # print(A @ alpha[0, :] )
-    # print(B[:,observations[1]])
-    # print(A @ alpha[0, :] * B[:,observations[1]] )
     '''
     if we know the previous state i,then the probability of being in state j at time t+1 is given as product of:
     1. Probability of being in state i at time t
@@ -48,7 +44,7 @@ def forward(A, pi, B, observations):
                 alpha[t, j] += alpha[t-1, i] * A[i, j] * B[j, observations[t]]
     """
 
-    print(f"The alpha matrix is \n:{alpha}")
+    print(f"The alpha matrix is: \n{alpha}")
     return np.sum(alpha[T-1,:])
 
 
@@ -66,7 +62,7 @@ def main():
     B = np.array([[0.7, 0.1, 0.2], [0.1, 0.6, 0.3], [0.3, 0.3, 0.4]])
 
     prob = forward(A, pi, B, observations)
-    print("Probability of the observed sequence is: ", prob)
+    print("Probability of the observed sequence is: ", np.round(prob , 4))
 
 if __name__ == "__main__":
     main()
