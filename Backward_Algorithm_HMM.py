@@ -12,7 +12,7 @@ def backward(A, pi, B, observations):
     N = pi.shape[0]
     
     """
-    Creating bera matrix. 
+    Creating beta matrix. 
     alpha is a (T, N) matrix.
     beta[t, :],the t'th row of the matrix, represents the P(ot+1, ot+2, ... ,oT , qt = Si)
     """
